@@ -32,6 +32,32 @@ app.get('/api/v1/tours', (req, res) => {
   });
 });
 
+app.get('/api/v1/tours/:id/:x?', (req, res) => {
+  //created a variable(id) in the url using : (:id/:var/:x fro multiple) these variables are called params
+  //added an optional parameter :x? using (?) needn't specify this in the request
+  console.log(req.params); //to access the params
+
+  const id = req.params.id * 1; //in JS we can convert a string(number in form of string) to integer by multiplying it by one(1)
+
+  if (id > tours.length) {
+    return res.status(404).json({
+      //we used return cause we want to exit function immediately, again to avoid two responses
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+  //note you could have handled this error in another way too(think with your problem solving skills😉)
+
+  const tour = tours.find((el) => el.id === id); //find the elements with the same id as the params
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour,
+    },
+  });
+});
+
 app.post('/api/v1/tours', (req, res) => {
   //post request can send data form client to server
   //req object holds all the data about the request that was done by client side(even the data sent by the client)
