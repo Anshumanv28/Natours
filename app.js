@@ -1,3 +1,6 @@
+// res.send('Done'); //always need to send something to complete the request response cycle
+//but remember not to send two responses
+
 const express = require('express');
 const fs = require('fs');
 
@@ -21,7 +24,7 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
-app.get('/api/v1/tours', (req, res) => {
+const getAllTours = (req, res) => {
   //GET all
   //get request can send data from server to the client
   //always specify the version of the api to prevent breaking someones code if you change the verion later on(can also do this in the subdomain)
@@ -32,9 +35,9 @@ app.get('/api/v1/tours', (req, res) => {
       tours: tours, //can write tours only as the key and value have same name
     },
   });
-});
+};
 
-app.get('/api/v1/tours/:id/:x?', (req, res) => {
+const getTour = (req, res) => {
   //GET for specific tour
   //created a variable(id) in the url using : (:id/:var/:x fro multiple) these variables are called params
   //added an optional parameter :x? using (?) needn't specify this in the request
@@ -58,9 +61,9 @@ app.get('/api/v1/tours/:id/:x?', (req, res) => {
       tour,
     },
   });
-});
+};
 
-app.post('/api/v1/tours', (req, res) => {
+const postTour = (req, res) => {
   //post request can send data form client to server
   //req object holds all the data about the request that was done by client side(even the data sent by the client)
   //however express dosen't put the body data in req object so we have to use middleware here(see up .use(express.json()))
@@ -84,13 +87,10 @@ app.post('/api/v1/tours', (req, res) => {
       });
     }
   );
-
-  // res.send('Done'); //always need to send something to complete the request response cycle
-  //but remember not to send two responses
-});
+};
 //note that we have access access to the newly created tours after each time the server restarts which it luckily does each time we write and save to the tours-simple.JSON file
 
-app.patch('/api/v1/tours/:id', (req, res) => {
+const patchTour = (req, res) => {
   //can also use PUT but why do extra work? so we using PATCH
 
   const id = req.params.id * 1; //using the second way to handle error
@@ -116,13 +116,45 @@ app.patch('/api/v1/tours/:id', (req, res) => {
   // }
   // temp_tours.replace(temp_tour, JSON.stringify(tour));
 
-  var arr = res.status(200).json({
+  res.status(200).json({
     status: 'success',
     data: {
       tour: '<Updated tour here>',
     },
   });
-});
+};
+
+const deleteTour = (req, res) => {
+  if (req.params.id * 1 > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+
+  res.status(204).json({
+    status: 'success',
+    data: null,
+  });
+};
+
+// app.get('/api/v1/tours', getAllTours);
+// app.get('/api/v1/tours/:id/:x?', getTour);
+// app.post('/api/v1/tours', postTour);
+// app.patch('/api/v1/tours/:id', patchTour);
+// app.delete('/api/v1/tours/:id', deleteTour);
+
+//repetetive right?
+//chained the methods using the same route for better structuring of the code(in case you need to change the url later on you can do it in one place HERE!)
+
+app.route('/api/v1/tours').get(getAllTours).post(postTour);
+
+app
+  .route('/api/v1/tours/:id')
+  .get(getTour)
+  .post(postTour)
+  .patch(patchTour)
+  .delete(deleteTour);
 
 const port = 3000;
 app.listen(port, () => {
