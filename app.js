@@ -3,10 +3,24 @@
 
 const express = require('express');
 const fs = require('fs');
+const morgan = require('morgan');
 
 const app = express();
 
-app.use(express.json()); //middleware
+// 1) MIDDLEWARES
+
+app.use(morgan('dev'));
+app.use(express.json());
+
+app.use((req, res, next) => {
+  console.log('Hello from the middleware😁');
+  next(); //remember very very important to complete the request response cycle
+});
+
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
 
 // app.get('/', (req, res) => {   // the route handler function (req, res)
 //   //app takes over the work of url parse method(which returns the query type and pathname)
@@ -24,12 +38,15 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
+// 2) ROUTE HANDLERS
+
 const getAllTours = (req, res) => {
   //GET all
   //get request can send data from server to the client
   //always specify the version of the api to prevent breaking someones code if you change the verion later on(can also do this in the subdomain)
   res.status(200).json({
     staus: 'success',
+    requestedAt: req.requestTime,
     results: tours.length, //just to help the user out the length of the array
     data: {
       tours: tours, //can write tours only as the key and value have same name
@@ -138,6 +155,8 @@ const deleteTour = (req, res) => {
   });
 };
 
+// 3) ROUTES
+
 // app.get('/api/v1/tours', getAllTours);
 // app.get('/api/v1/tours/:id/:x?', getTour);
 // app.post('/api/v1/tours', postTour);
@@ -146,7 +165,6 @@ const deleteTour = (req, res) => {
 
 //repetetive right?
 //chained the methods using the same route for better structuring of the code(in case you need to change the url later on you can do it in one place HERE!)
-
 app.route('/api/v1/tours').get(getAllTours).post(postTour);
 
 app
@@ -155,6 +173,8 @@ app
   .post(postTour)
   .patch(patchTour)
   .delete(deleteTour);
+
+// 4) START SERVER
 
 const port = 3000;
 app.listen(port, () => {
