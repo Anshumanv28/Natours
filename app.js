@@ -6,10 +6,11 @@ const fs = require('fs');
 const morgan = require('morgan');
 
 const app = express();
-
+//----------------------
 // 1) MIDDLEWARES
-
+//----------------------
 app.use(morgan('dev'));
+
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -35,11 +36,13 @@ app.use((req, res, next) => {
 
 const tours = JSON.parse(
   //JSON file in array format
-  fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
+  fs.readFileSync(
+    `${__dirname}/dev-data/data/tours-simple.json`
+  )
 );
-
-// 2) ROUTE HANDLERS
-
+//----------------------
+// 2) ROUTE HANDLERS (or controlers)
+//----------------------
 const getAllTours = (req, res) => {
   //GET all
   //get request can send data from server to the client
@@ -80,14 +83,17 @@ const getTour = (req, res) => {
   });
 };
 
-const postTour = (req, res) => {
+const createTour = (req, res) => {
   //post request can send data form client to server
   //req object holds all the data about the request that was done by client side(even the data sent by the client)
   //however express dosen't put the body data in req object so we have to use middleware here(see up .use(express.json()))
   // console.log(req.body); //thx to middleware
 
   const newId = tours[tours.length - 1].id + 1; //be stateless(don't remember the previous id)
-  const newTour = Object.assign({ id: newId }, req.body); //better to not mutate the original req.body object
+  const newTour = Object.assign(
+    { id: newId },
+    req.body
+  ); //better to not mutate the original req.body object
   //cosnt newTour = Object.assign({req.body.id: newId})  //mutauive option to do the same
   //object.assign() will merge two/2 argument objects to form a new object
 
@@ -107,7 +113,7 @@ const postTour = (req, res) => {
 };
 //note that we have access access to the newly created tours after each time the server restarts which it luckily does each time we write and save to the tours-simple.JSON file
 
-const patchTour = (req, res) => {
+const updateTour = (req, res) => {
   //can also use PUT but why do extra work? so we using PATCH
 
   const id = req.params.id * 1; //using the second way to handle error
@@ -155,8 +161,44 @@ const deleteTour = (req, res) => {
   });
 };
 
-// 3) ROUTES
+const getAllUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined!',
+  });
+};
 
+const getUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined!',
+  });
+};
+
+const createUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined!',
+  });
+};
+
+const updateUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined!',
+  });
+};
+
+const deleteUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined!',
+  });
+};
+
+//-----------------
+// 3) ROUTES
+//-----------------
 // app.get('/api/v1/tours', getAllTours);
 // app.get('/api/v1/tours/:id/:x?', getTour);
 // app.post('/api/v1/tours', postTour);
@@ -165,17 +207,30 @@ const deleteTour = (req, res) => {
 
 //repetetive right?
 //chained the methods using the same route for better structuring of the code(in case you need to change the url later on you can do it in one place HERE!)
-app.route('/api/v1/tours').get(getAllTours).post(postTour);
+app
+  .route('/api/v1/tours')
+  .get(getAllTours)
+  .post(createTour);
 
 app
   .route('/api/v1/tours/:id')
   .get(getTour)
-  .post(postTour)
-  .patch(patchTour)
+  .patch(updateTour)
   .delete(deleteTour);
 
-// 4) START SERVER
+app
+  .route('/api/v1/user')
+  .get(getAllUser)
+  .post(createUser);
 
+app
+  .route('/api/v1/user/:id')
+  .get(getUser)
+  .patch(updateUser)
+  .delete(deleteUser);
+//-----------------
+// 4) START SERVER
+//------------------
 const port = 3000;
 app.listen(port, () => {
   console.log('App running on server....');
