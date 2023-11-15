@@ -14,7 +14,9 @@ if (process.env.NODE_ENV === 'development') {
 
 app.use(express.json());
 
-app.use(express.static(`${__dirname}/public`)); //middleware to access satic files(note that the browser by default looks for the requested file in the public folder(that we defined) if not found)
+app.use(
+  express.static(`${__dirname}/public`),
+); //middleware to access satic files(note that the browser by default looks for the requested file in the public folder(that we defined) if not found)
 
 app.use((req, res, next) => {
   console.log('Hello from the middleware😁');

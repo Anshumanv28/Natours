@@ -1,5 +1,6 @@
 {
   "singleQuote": true,
   "noTrailingSpaces": true,
-  "endOfLine": "auto"
+  "endOfLine": "auto",
+  "printWidth": 45
 }

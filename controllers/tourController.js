@@ -1,53 +1,91 @@
-const fs = require('fs');
+// const fs = require('fs');
+const Tour = require('./../models/tourModel');
 
-const tours = JSON.parse(
-  //JSON file in array format
-  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`),
-);
+//testing code before db integration
 
-exports.checkID = (req, res, next, val) => {
-  if (val * 1 > tours.length) {
-    return res.status(404).json({
+// const tours = JSON.parse(
+//   //JSON file in array format
+//   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`),
+// );
+
+//testing code before db integration
+
+//*****no longer needed JSON file operations after db integration******
+
+// exports.checkID = (req, res, next, val) => {
+//   if (val * 1 > tours.length) {
+//     return res.status(404).json({
+//       status: 'fail',
+//       message: 'invalid ID',
+//     });
+//   }
+//   next();
+// };
+
+// exports.checkBody = (req, res, next) => {
+//   if (!req.body.name || !req.body.price) {
+//     return res.status(400).json({
+//       status: 'fail',
+//       message: 'missing price or name',
+//     });
+//   }
+//   next();
+// };
+
+exports.getAllTours = async (req, res) => {
+  try {
+    const tours = await Tour.find();
+    console.log(tours);
+    res.status(200).json({
+      status: 'success',
+      results: tours.length,
+      data: {
+        tours,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
       status: 'fail',
-      message: 'invalid ID',
+      message: err,
     });
   }
-  next();
-};
-
-exports.checkBody = (req, res, next) => {
-  if (!req.body.name || !req.body.price) {
-    return res.status(400).json({
-      status: 'fail',
-      message: 'missing price or name',
-    });
-  }
-  next();
-};
-
-exports.getAllTours = (req, res) => {
-  //GET all
-
   //get request can send data from server to the client
   //always specify the version of the api to prevent breaking someones code if you change the verion later on(can also do this in the subdomain)
-  res.status(200).json({
-    staus: 'success',
-    requestedAt: req.requestTime,
-    results: tours.length, //just to help the user out the length of the array
-    data: {
-      tours: tours, //can write tours only as the key and value have same name
-    },
-  });
+  // res.status(200).json({
+  //   staus: 'success',
+  //   requestedAt: req.requestTime,
+  // results: tours.length, //just to help the user out the length of the array
+  // data: {
+  //   tours: tours, //can write tours only as the key and value have same name
+  // },
+  // });
 };
 
-exports.getTour = (req, res) => {
-  //GET for specific tour
+exports.getTour = async (req, res) => {
+  try {
+    const tour = await Tour.findById(
+      req.params.id,
+    );
+    // Tour.findOne({ id: req.params.id });
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
+    });
+  }
 
   //created a variable(id) in the url using : (:id/:var/:x fro multiple) these variables are called params
   //added an optional parameter :x? using (?) needn't specify this in the request
-  console.log(req.params); //to access the params
+  // console.log(req.params); //to access the params
 
-  const id = req.params.id * 1; //in JS we can convert a string(number in form of string) to integer by multiplying it by one(1)
+  // const id = req.params.id * 1; //in JS we can convert a string(number in form of string) to integer by multiplying it by one(1)
 
   // if (id > tours.length) {
   //   return res.status(404).json({
@@ -58,40 +96,62 @@ exports.getTour = (req, res) => {
   // }
   //note you could have handled this error in another way too(think with your problem solving skills😉)
 
-  const tour = tours.find((el) => el.id === id);
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour,
-    },
-  });
+  // const tour = tours.find((el) => el.id === id);
+  // res.status(200).json({
+  //   status: 'success',
+  //   data: {
+  //     tour,
+  //   },
+  // });
 };
 
-exports.createTour = (req, res) => {
+exports.createTour = async (req, res) => {
+  try {
+    // const newTour = new Tour({})     //creating a new tour using a new document way
+    // newTour.save()                   //using the ducmunets save() to save the new tour
+
+    const newTour = await Tour.create(
+      req.body,
+    ); //creating a new tour directly on the model itself way
+
+    res.status(201).json({
+      status: 'success',
+      data: {
+        tour: newTour,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({
+      status: 'fail',
+      message: err,
+    });
+  }
+
   //post request can send data form client to server
   //req object holds all the data about the request that was done by client side(even the data sent by the client)
   //however express dosen't put the body data in req object so we have to use middleware here(see up .use(express.json()))
   // console.log(req.body); //thx to middleware
 
-  const newId = tours[tours.length - 1].id + 1; //be stateless(don't remember the previous id)
-  const newTour = Object.assign({ id: newId }, req.body);
+  // const newId = tours[tours.length - 1].id + 1; //be stateless(don't remember the previous id)
+  // const newTour = Object.assign({ id: newId }, req.body);
 
-  tours.push(newTour);
-  fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
-    JSON.stringify(tours),
-    (err) => {
-      res.status(201).json({
-        status: 'success',
-        data: {
-          tour: newTour,
-        },
-      });
-    },
-  );
+  // tours.push(newTour);
+  // fs.writeFile(
+  //   `${__dirname}/dev-data/data/tours-simple.json`,
+  //   JSON.stringify(tours),
+  //   (err) => {
+  //     res.status(201).json({
+  //       status: 'success',
+  //       data: {
+  //         tour: newTour,
+  //       },
+  //     });
+  //   },
+  // );
 };
 
-exports.updateTour = (req, res) => {
+exports.updateTour = async (req, res) => {
   // const id = req.params.id * 1;
   // const tour = tours.find((el) => el.id === id);
   // // if (!tour) {
@@ -101,24 +161,50 @@ exports.updateTour = (req, res) => {
   // //   });
   // // }
 
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour: '<Updated tour here>',
-    },
-  });
+  try {
+    const tour =
+      await Tour.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        {
+          new: true, //always return the updated document rather than the original
+          runValidators: true,
+        },
+      );
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour, //again tour: tour => tour
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
+    });
+  }
 };
 
-exports.deleteTour = (req, res) => {
+exports.deleteTour = async (req, res) => {
   // if (req.params.id * 1 > tours.length) {
   //   return res.status(404).json({
   //     status: 'fail',
   //     message: 'Invalid ID',
   //   });
   // }
+  try {
+    await Tour.findByIdAndDelete(
+      req.params.id,
+    );
 
-  res.status(204).json({
-    status: 'success',
-    data: null,
-  });
+    res.status(204).json({
+      status: 'success',
+      data: null,
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
+    });
+  }
 };

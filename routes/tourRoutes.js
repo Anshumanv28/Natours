@@ -4,13 +4,13 @@ const tourController = require('./../controllers/tourController');
 
 const router = express.Router();
 
-router.param('id', tourController.checkID); //added an additional parameterised middleware to validate user id and removed the related code from tourController
+// router.param('id', tourController.checkID); //added an additional parameterised middleware to validate user id and removed the related code from tourController
 
 router
   .route('/')
   .get(tourController.getAllTours)
-  .post(tourController.checkBody, tourController.createTour); //adding the middleware to the post middleware stack
-
+  // .post(tourController.checkBody, tourController.createTour); //adding the middleware to the post middleware stack
+  .post(tourController.createTour);
 router
   .route('/:id')
   .get(tourController.getTour)
