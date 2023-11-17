@@ -34,8 +34,47 @@ const Tour = require('./../models/tourModel');
 
 exports.getAllTours = async (req, res) => {
   try {
-    const tours = await Tour.find();
-    console.log(tours);
+    // 1) Filtering
+    const queryObj = { ...req.query };
+    const excludeFields = ['page', 'sort', 'limit', 'fields'];
+    excludeFields.forEach((el) => delete queryObj[el]);
+
+    console.log(req.query);
+    // console.log(queryObj);
+
+    // const tours = await Tour.find({
+    //   duration: 5,
+    //   difficulty: 'easy',
+    // });
+
+    // const tours = await Tour.find(req.query);  //if we want to perform any operations on the query we can't so better await for the final mainpulated query
+
+    // const query = Tour.find(req.query);
+
+    // 2) Advanced Filtering
+
+    // { difficulty: 'easy', duration: { $gte: 5} }  //expected
+    // { difficulty: 'easy', duration: { gte: '5' } }   //what we actually got from the query
+    //gte, gt, lte, lt    ding dong we can use REGEX, better brush it up
+
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    console.log(JSON.parse(queryStr));
+
+    const query = Tour.find(JSON.parse(queryStr));
+
+    //perform your operations
+
+    const tours = await query;
+
+    // const tours = await Tour.find()
+    //   .where('duration')
+    //   .equals(5)
+    //   .where('difficulty')
+    //   .equals('easy');
+
+    // const tours = await Tour.find();
+    // console.log(tours);
     res.status(200).json({
       status: 'success',
       results: tours.length,
@@ -63,9 +102,7 @@ exports.getAllTours = async (req, res) => {
 
 exports.getTour = async (req, res) => {
   try {
-    const tour = await Tour.findById(
-      req.params.id,
-    );
+    const tour = await Tour.findById(req.params.id);
     // Tour.findOne({ id: req.params.id });
 
     res.status(200).json({
@@ -110,9 +147,7 @@ exports.createTour = async (req, res) => {
     // const newTour = new Tour({})     //creating a new tour using a new document way
     // newTour.save()                   //using the ducmunets save() to save the new tour
 
-    const newTour = await Tour.create(
-      req.body,
-    ); //creating a new tour directly on the model itself way
+    const newTour = await Tour.create(req.body); //creating a new tour directly on the model itself way
 
     res.status(201).json({
       status: 'success',
@@ -162,15 +197,10 @@ exports.updateTour = async (req, res) => {
   // // }
 
   try {
-    const tour =
-      await Tour.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        {
-          new: true, //always return the updated document rather than the original
-          runValidators: true,
-        },
-      );
+    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+      new: true, //always return the updated document rather than the original
+      runValidators: true,
+    });
     res.status(200).json({
       status: 'success',
       data: {
@@ -193,9 +223,7 @@ exports.deleteTour = async (req, res) => {
   //   });
   // }
   try {
-    await Tour.findByIdAndDelete(
-      req.params.id,
-    );
+    await Tour.findByIdAndDelete(req.params.id);
 
     res.status(204).json({
       status: 'success',

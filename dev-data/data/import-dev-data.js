@@ -1,17 +1,11 @@
-//this file will be used to handle everything not related to the express app, that is done in the app.js file
+const fs = require('fs');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const Tour = require('./../../models/tourModel');
 
 dotenv.config({ path: './config.env' }); //using the config.env file to configure the envionment variables for our project insted of doing them one by one via the console
-//need to read the environment variables before you require the app file or you can't read the environment variables inside the app file
-
-const app = require('./app'); // console.log(app.get('env')); //checking the environment variable set by express
-
-//in case you want to do it via the console use command: NODE_ENV=development nodemon server.js
-// console.log(process.env); //checking the environment variables set by node
 
 const DB = process.env.DATABASE.replace(
-  //replacing the connection strings <PASSWORD> with the original passowrd in the .env file
   '<PASSWORD>',
   process.env.DATABASE_PASSWORD,
 );
@@ -37,11 +31,45 @@ mongoose
     console.log(
       'DB connections successfull!',
     );
+    // process.exit(); //aggressive way of killing a process use carefully
   });
 
-const port = 3000;
-app.listen(port, () => {
-  console.log(
-    `App running on port ${port}...`,
-  );
-});
+//read Json file
+const tours = JSON.parse(
+  fs.readFileSync(
+    `${__dirname}/tours-simple.json`,
+    'utf-8',
+  ),
+);
+
+//import data into DB
+const importData = async () => {
+  try {
+    await Tour.create(tours);
+    console.log('Data successfully loaded!');
+    process.exit(); //aggressive way of killing a process use carefully
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+//delete all the data from DB
+const deleteData = async () => {
+  try {
+    await Tour.deleteMany();
+    console.log(
+      'Data successfully deleted!',
+    );
+    process.exit(); //aggressive way of killing a process use carefully
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+if (process.argv[2] === '--import') {
+  importData();
+} else if (process.argv[2] === '--delete') {
+  deleteData();
+}
+
+console.log(process.argv);

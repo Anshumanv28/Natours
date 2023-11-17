@@ -2,5 +2,5 @@
   "singleQuote": true,
   "noTrailingSpaces": true,
   "endOfLine": "auto",
-  "printWidth": 45
+  "printWidth": 80
 }

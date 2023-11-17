@@ -1,15 +1,11 @@
 {
-  "extends": [
-    "airbnb",
-    "prettier",
-    "plugin:node/recommended"
-  ],
+  "extends": ["airbnb", "prettier", "plugin:node/recommended"],
   "plugins": ["prettier"],
   "rules": {
     "prettier/prettier": [
       "error",
       {
-        "printWidth": 45,
+        "printWidth": 80,
         "singleQuote": true
       }
     ], // Set your desired maximum line length
@@ -23,10 +19,7 @@
     "no-return-await": "off",
     "no-underscore-dangle": "off",
     "class-methods-use-this": "off",
-    "prefer-destructuring": [
-      "error",
-      { "object": true, "array": false }
-    ],
+    "prefer-destructuring": ["error", { "object": true, "array": false }],
     "no-unused-vars": [
       "warn",
       {
