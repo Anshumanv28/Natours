@@ -1,6 +1,13 @@
 // const fs = require('fs');
 const Tour = require('./../models/tourModel');
-
+const APIFeatures = require('./../utils/apiFeatures');
+// Alias route for frequently use route
+exports.aliasTopTours = async (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingAverage,price';
+  req.query.fields = 'name,price,ratingAverage,summary,difficulty';
+  next();
+};
 //testing code before db integration
 
 // const tours = JSON.parse(
@@ -34,12 +41,12 @@ const Tour = require('./../models/tourModel');
 
 exports.getAllTours = async (req, res) => {
   try {
-    // 1) Filtering
-    const queryObj = { ...req.query };
-    const excludeFields = ['page', 'sort', 'limit', 'fields'];
-    excludeFields.forEach((el) => delete queryObj[el]);
+    // 1A) Filtering
+    // const queryObj = { ...req.query };
+    // const excludeFields = ['page', 'sort', 'limit', 'fields'];
+    // excludeFields.forEach((el) => delete queryObj[el]);
 
-    console.log(req.query);
+    // console.log(req.query);
     // console.log(queryObj);
 
     // const tours = await Tour.find({
@@ -51,21 +58,54 @@ exports.getAllTours = async (req, res) => {
 
     // const query = Tour.find(req.query);
 
-    // 2) Advanced Filtering
+    // 1B) Advanced Filtering
 
     // { difficulty: 'easy', duration: { $gte: 5} }  //expected
     // { difficulty: 'easy', duration: { gte: '5' } }   //what we actually got from the query
     //gte, gt, lte, lt    ding dong we can use REGEX, better brush it up
 
-    let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-    console.log(JSON.parse(queryStr));
+    // let queryStr = JSON.stringify(queryObj);
+    // queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    // console.log(JSON.parse(queryStr));
 
-    const query = Tour.find(JSON.parse(queryStr));
+    // let query = Tour.find(JSON.parse(queryStr)); //note the 'let' usage for keeping the query open for more operations
 
-    //perform your operations
+    // 2) Sorting
+    // if (req.query.sort) {
+    //   const sortBy = req.query.sort.split(',').join(' ');
+    //   query = query.sort(sortBy);
+    // } else {
+    //   query = query.sort('-createdAt');
+    // }
 
-    const tours = await query;
+    // 3) Field Limiting
+    // if (req.query.fields) {
+    //   const fields = req.query.fields.split(',').join(' ');
+    //   // query = query.select('name duration price'); //include these fields in the response, is called projecting
+    //   query = query.select(fields);
+    // } else {
+    //   query = query.select('-__v'); //exclude these fields in the response
+    // }
+
+    // 4) Pagination
+    // const page = req.query.page * 1 || 1;
+    // const limit = req.query.limit * 1 || 100;
+    // const skip = (page - 1) * limit;
+
+    // query = query.skip(skip).limit(limit);
+
+    // if (req.query.page) {
+    //   const numTours = await Tour.countDocuments();
+    //   if (skip >= numTours) throw new Error('This page does not exist');
+    // }
+
+    //execute query finally
+    const features = new APIFeatures(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate(); //chaining possible only because we return this from each function
+    const tours = await features.query;
 
     // const tours = await Tour.find()
     //   .where('duration')

@@ -34,14 +34,10 @@ mongoose
   .then((con) => {
     // con is the connection object returned from the connection() promise
     // console.log(con.connections);
-    console.log(
-      'DB connections successfull!',
-    );
+    console.log('DB connections successfull!');
   });
 
 const port = 3000;
 app.listen(port, () => {
-  console.log(
-    `App running on port ${port}...`,
-  );
+  console.log(`App running on port ${port}...`);
 });
