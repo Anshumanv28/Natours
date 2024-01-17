@@ -2,6 +2,12 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
+process.on('uncaughtException', (err) => {
+  //when an uncaught exception occurs, the process needs to be restarted as it is in an unclean state
+  console.log('UNCAUGHT EXCEPTION! Shutting down...');
+  console.log(err.name, err.message);
+  process.exit(1);
+});
 dotenv.config({ path: './config.env' }); //using the config.env file to configure the envionment variables for our project insted of doing them one by one via the console
 //need to read the environment variables before you require the app file or you can't read the environment variables inside the app file
 
@@ -18,7 +24,7 @@ const DB = process.env.DATABASE.replace(
 
 mongoose
   //for the local database
-  .connect(process.env.DATABASE_LOCAL, {
+  .connect(DB, {
     useNewUrlParser: true, //for handling depreciation warnings
     useCreateIndex: true,
     useFindAndModify: false,
@@ -31,13 +37,19 @@ mongoose
   //   useCreateIndex: true,
   //   useFindAndModify: false,
   // })
-  .then((con) => {
-    // con is the connection object returned from the connection() promise
-    // console.log(con.connections);
-    console.log('DB connections successfull!');
-  });
+  .then(() => console.log('DB connections successfull!'));
+// con is the connection object returned from the connection() promise
+// console.log(con.connections);
 
 const port = 3000;
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`App running on port ${port}...`);
+});
+
+process.on('unhandledRejection', (err) => {
+  console.log('UNHANDLED REJECTION! Shutting down...');
+  console.log(err);
+  server.close(() => {
+    process.exit(1); //1 means uncaught exception
+  });
 });
