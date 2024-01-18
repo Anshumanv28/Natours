@@ -160,8 +160,8 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 
 exports.getTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findById(req.params.id);
-  console.log('🍀🍀🍀🍀');
-  console.log(tour);
+  // console.log('🍀🍀🍀🍀');
+  // console.log(tour);
   if (!tour) {
     return next(new AppError('No tour found with this ID', 404));
   }
