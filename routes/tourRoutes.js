@@ -1,6 +1,8 @@
 const express = require('express');
 // eslint-disable-next-line import/no-useless-path-segments
 const tourController = require('./../controllers/tourController');
+// eslint-disable-next-line import/no-useless-path-segments
+const authController = require('./../controllers/authController');
 
 const router = express.Router();
 
@@ -16,7 +18,7 @@ router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan);
 router
   .route('/')
   // .get(catchAsync(tourController.getAllTours))  //could have also used catchAsync here instead of the in the controller (takes longer to debug sometimes)
-  .get(tourController.getAllTours)
+  .get(authController.protect, tourController.getAllTours)
   // .post(tourController.checkBody, tourController.createTour); //adding the middleware to the post middleware stack
   .post(tourController.createTour);
 router
