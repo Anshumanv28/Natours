@@ -1,4 +1,5 @@
 /*eslint-disable*/
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const AppError = require('../utils/appError');
 const User = require('../models/userModel');
@@ -74,10 +75,25 @@ exports.protect = catchAsync(async (req, res, next) => {
     );
   }
   //  2) verification token
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  console.log(decoded);
 
   // 3) check if user still exists
+  const freshUser = await User.findById(decoded.id);
+  if (!freshUser) {
+    return next(
+      new AppError('The user belonging to this token no longer exist', 401),
+    );
+  }
 
   // 4) check if user changed password after the JW-Token was issued
+  if (freshUser.changedPasswordAfter(decoded.iat)) {
+    return next(
+      new AppError('User recently changed password! Please log in again!', 401),
+    );
+  }
 
+  // GRANT ACCESS TO PROTECTED ROUTE
+  req.user = freshUser;
   next();
 });

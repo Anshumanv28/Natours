@@ -8,7 +8,7 @@ const handleCastErrorDB = (err) => {
 const handleDuplicateFieldsDB = (err) => {
   console.log('I AM WORKING');
   console.log(err);
-  const value = err.keyValue.name; //this is a regular expression to extract the value from the error message
+  const value = err.keyValue.email; //this is a regular expression to extract the value from the error message
   console.log(value);
   const message = `Duplicate field value: "${value}". Please use another value!`;
   return new AppError(message, 400); //400 is bad request
@@ -20,6 +20,12 @@ const handleValidationErrorDB = (err) => {
   const message = `Invalid input data. ${errors.join('. ')}`;
   return new AppError(message, 400); //400 is bad request
 };
+
+const handleJWTError = (err) =>
+  new AppError('Invalid token. Please log in again!', 401);
+
+const handleJWTexipiredError = (err) =>
+  new AppError('Your token has expired! Please log in again!', 401);
 
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
@@ -61,6 +67,8 @@ module.exports = (err, req, res, next) => {
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
     if (error._message === 'Tour validation failed')
       error = handleValidationErrorDB(error);
+    if (error.name === 'JsonWebTokenError') error = handleJWTError();
+    if (error.name === 'TokenExpiredError') error = handleJWTexipiredError();
 
     sendErrorProd(error, res);
   }
