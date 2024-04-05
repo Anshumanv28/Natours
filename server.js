@@ -16,14 +16,20 @@ const app = require('./app'); // console.log(app.get('env')); //checking the env
 //in case you want to do it via the console use command: NODE_ENV=development nodemon server.js
 // console.log(process.env); //checking the environment variables set by node
 
-const DB = process.env.DATABASE.replace(
+// const DB = process.env.DATABASE.replace(
+//   //replacing the connection strings <PASSWORD> with the original passowrd in the .env file
+//   '<PASSWORD>',
+//   process.env.DATABASE_PASSWORD,
+// );
+
+//for the local database
+const DB = process.env.DATABASE_LOCAL.replace(
   //replacing the connection strings <PASSWORD> with the original passowrd in the .env file
   '<PASSWORD>',
   process.env.DATABASE_PASSWORD,
 );
 
 mongoose
-  //for the local database
   .connect(DB, {
     useNewUrlParser: true, //for handling depreciation warnings
     useCreateIndex: true,
