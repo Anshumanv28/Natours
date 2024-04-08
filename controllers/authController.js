@@ -14,24 +14,40 @@ const signToken = (id) => {
   });
 };
 
-exports.signup = catchAsync(async (req, res, next) => {
-  const newUser = await User.create({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm,
-    role: req.body.role, //this is not secure change soon
-  });
+const createSendToken = (user, statusCode, res) => {
+  const token = signToken(user._id);
 
-  const token = signToken(newUser._id);
-
-  res.status(201).json({
+  res.status(statusCode).json({
     status: 'success',
     token,
     data: {
-      user: newUser,
+      user,
     },
   });
+}
+
+exports.signup = catchAsync(async (req, res, next) => {
+  const newUser = await User.create(req.body,
+    //{
+    // name: req.body.name,
+    // email: req.body.email,
+    // password: req.body.password,
+    // passwordConfirm: req.body.passwordConfirm,
+    // role: req.body.role, //this is not secure change soon
+  // }
+  );
+
+  createSendToken(newUser, 201, res);
+
+  // const token = signToken(newUser._id);
+
+  // res.status(201).json({
+  //   status: 'success',
+  //   token,
+  //   data: {
+  //     user: newUser,
+  //   },
+  // });
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -50,15 +66,14 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError('Incorrect email or password', 401));
   }
 
-  console.log(user);
-
   //3) if everything ok, send token to client
-  const token = signToken(user._id);
+  createSendToken(user, 200, res);
+  // const token = signToken(user._id);
 
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  // res.status(200).json({
+  //   status: 'success',
+  //   token,
+  // });
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -180,13 +195,35 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   // and the save middleware functions are called like the one where passwords are encrypted
 
   //3) Update changedPasswordAt property for the user
+  user.passwordChangedAt = Date.now();
   
-
   //4) Log the user in, send JWT
-  const token = signToken(user._id);
+  createSendToken(user, 200, res);
+  // const token = signToken(user._id);
 
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  // res.status(200).json({
+  //   status: 'success',
+  //   token,
+  // });
+});
+
+exports.updatePassword = catchAsync(async(req, res, next) => {  //only for authenticated users
+  //1) get user from collection
+  const user = await User.findById(req.user.id).select('+password');  //explicitly selecting the password field by definging in the schema
+
+  //2) check if POSTed current password is correct
+  if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
+    return next(new AppError('Your current password is wrong', 401));
+  }
+
+  //3) if so, update password
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  await user.save();  
+
+  //4) Update changedPasswordAt property for the user
+  user.passwordChangedAt = Date.now();
+
+  //5) log user in, send JWT
+  createSendToken(user, 200, res);
 });
