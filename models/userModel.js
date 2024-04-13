@@ -42,6 +42,11 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false, //we don't want the user to know about this field
+  },
 });
 
 userSchema.pre('save', async function (next) {
@@ -60,6 +65,12 @@ userSchema.pre('save', function (next) {
   if (!this.isModified('password') || this.isNew) return next();
 
   this.passwordChangedAt = Date.now() - 1000; //1 second before the token is created(small hack) to make sure the token is always created after the password has been changed (will help with protected routes later)
+  next();
+});
+
+userSchema.pre(/^find/, function (next) {
+  //this points to the current query
+  this.find({ active: { $ne: false } });
   next();
 });
 
