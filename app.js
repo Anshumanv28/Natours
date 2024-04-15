@@ -2,6 +2,9 @@ const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const hpp = require('hpp');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -31,6 +34,26 @@ app.use('/api', limiter);
 
 //body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' })); //middleware to parse the body of the request and limit the size of the body to 10kb
+
+//Data Sanitization against NoSQL query injection
+app.use(mongoSanitize());
+
+//Data Sanitization against XSS
+app.use(xss());
+
+//prevent parameter pollution
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'maxGroupSize',
+      'difficulty',
+      'price',
+    ],
+  }),
+);
 
 //serving static files
 app.use(express.static(`${__dirname}/public`)); //middleware to access satic files(note that the browser by default looks for the requested file in the public folder(that we defined) if not found)

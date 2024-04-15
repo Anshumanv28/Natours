@@ -20,7 +20,7 @@ class APIFeatures {
     return this;
   }
 
-  sort() {
+  sort() {  //support for only single sorting parameter
     if (this.queryString.sort) {
       const sortBy = this.queryString.sort.split(',').join(' ');
       this.query = this.query.sort(sortBy);
