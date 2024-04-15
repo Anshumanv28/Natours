@@ -1,5 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -8,14 +10,29 @@ const userRouter = require('./routes/userRoutes');
 
 const app = express();
 //----------------------
-// 1) MIDDLEWARES
+// 1) GLOBAL MIDDLEWARES
 //----------------------
+
+//set security HTTP headers
+app.use(helmet());
+
+//development logging
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-app.use(express.json());
+//limit the number of requests from the same IP
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000,
+  message: 'Too many requests from this IP, please try again in an hour!',
+});
+app.use('/api', limiter);
 
+//body parser, reading data from body into req.body
+app.use(express.json({ limit: '10kb' })); //middleware to parse the body of the request and limit the size of the body to 10kb
+
+//serving static files
 app.use(express.static(`${__dirname}/public`)); //middleware to access satic files(note that the browser by default looks for the requested file in the public folder(that we defined) if not found)
 
 // app.use((req, res, next) => {
