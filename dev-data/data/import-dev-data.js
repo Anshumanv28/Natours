@@ -28,19 +28,12 @@ mongoose
   .then((con) => {
     // con is the connection object returned from the connection() promise
     // console.log(con.connections);
-    console.log(
-      'DB connections successfull!',
-    );
+    console.log('DB connections successfull!');
     // process.exit(); //aggressive way of killing a process use carefully
   });
 
 //read Json file
-const tours = JSON.parse(
-  fs.readFileSync(
-    `${__dirname}/tours-simple.json`,
-    'utf-8',
-  ),
-);
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf-8'));
 
 //import data into DB
 const importData = async () => {
@@ -57,9 +50,7 @@ const importData = async () => {
 const deleteData = async () => {
   try {
     await Tour.deleteMany();
-    console.log(
-      'Data successfully deleted!',
-    );
+    console.log('Data successfully deleted!');
     process.exit(); //aggressive way of killing a process use carefully
   } catch (err) {
     console.log(err);
