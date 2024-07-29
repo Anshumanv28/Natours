@@ -81,7 +81,7 @@ const tourSchema = new mongoose.Schema(
       default: false,
     },
     startLocation: {
-      //GeoJSON
+      //GeoJSON (GeoSpatial Data) - used to store data in the form of coordinates
       type: {
         type: String,
         default: 'Point',
@@ -107,7 +107,7 @@ const tourSchema = new mongoose.Schema(
     ],
   },
   {
-    toJSON: { virtuals: true },
+    toJSON: { virtuals: true }, //This setting ensures that when a Mongoose document is converted to JSON (e.g., when sending a response in an API), any virtual properties defined in the schema are included in the output. Virtual properties are not stored in the MongoDB database but are computed values based on other document fields.
     toObject: { virtuals: true },
   },
 );

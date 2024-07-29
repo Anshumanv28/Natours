@@ -28,5 +28,6 @@
     ],
     "space-infix-ops": "off",
     "prefer-object-spread": ["warn"]
+    // "no-console": "off"
   }
 }
