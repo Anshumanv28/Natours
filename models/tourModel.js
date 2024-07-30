@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 const validator = require('validator');
+const User = require('./userModel');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -105,6 +106,13 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
+    // guides: Array, //embedding guides in tours
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User', //referencing the User model(No import of user model needed)
+      },
+    ],
   },
   {
     toJSON: { virtuals: true }, //This setting ensures that when a Mongoose document is converted to JSON (e.g., when sending a response in an API), any virtual properties defined in the schema are included in the output. Virtual properties are not stored in the MongoDB database but are computed values based on other document fields.
@@ -145,6 +153,13 @@ tourSchema.pre('save', function (next) {
   next();
 });
 
+//Embedding guides in tours
+// tourSchema.pre('save', async function (next) {
+//   const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+//   this.guides = await Promise.all(guidesPromises);
+//   next();
+// });
+
 //can have multiple pre and post middleware for each operation
 
 // tourSchema.post('save', function (doc, next) {
@@ -160,6 +175,14 @@ tourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
 
   this.start = Date.now();
+  next();
+});
+
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
   next();
 });
 

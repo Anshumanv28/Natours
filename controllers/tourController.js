@@ -159,7 +159,11 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 // };
 
 exports.getTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findById(req.params.id);
+  // const tour = await Tour.findById(req.params.id);
+  const tour = await Tour.findById(req.params.id).populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  }); //will show populate the guides in the tours model(referencing) with the guides data during query execution
   // console.log('🍀🍀🍀🍀');
   // console.log(tour);
   if (!tour) {
