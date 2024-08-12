@@ -120,6 +120,18 @@ const tourSchema = new mongoose.Schema(
   },
 );
 
+tourSchema.virtual('durationWeeks').get(function () {
+  return this.duration / 7;
+});
+
+//virtual populate
+//making the reviews a virtual property to make it persistent in the database without actually storing it
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
+
 //testing code
 
 // const testTour = new Tour({
