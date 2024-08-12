@@ -11,6 +11,8 @@ const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 
+const reviewRouter = require('./routes/reviewRoutes');
+
 const app = express();
 //----------------------
 // 1) GLOBAL MIDDLEWARES
@@ -84,6 +86,8 @@ app.use((req, res, next) => {
 app.use('/api/v1/tours', tourRouter); //effectively created a mini app in itself
 //note that this depends on the compiler/interpretter hitting this line of code then going to middleware function then to its respective route handler
 app.use('/api/v1/users', userRouter); //this is called mounting the router(on the route)
+
+app.use('/api/v1/reviews', reviewRouter);
 //this route will be used when no other route is matched
 app.all('*', (req, res, next) => {
   //obselete error handling
