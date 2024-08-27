@@ -128,8 +128,8 @@ tourSchema.virtual('durationWeeks').get(function () {
 //making the reviews a virtual property to make it persistent in the database without actually storing it
 tourSchema.virtual('reviews', {
   ref: 'Review',
-  foreignField: 'tour',
-  localField: '_id',
+  foreignField: 'tour', //how it is in the review model
+  localField: '_id', //how it is in the tour model
 });
 
 //testing code

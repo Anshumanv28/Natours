@@ -160,7 +160,7 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 
 exports.getTour = catchAsync(async (req, res, next) => {
   // const tour = await Tour.findById(req.params.id);
-  const tour = await Tour.findById(req.params.id);
+  const tour = await Tour.findById(req.params.id).populate('reviews'); //will show populate the reviews in the tours model(referencing) with the reviews data during query execution
   // const tour = await Tour.findById(req.params.id).populate({
   //   path: 'guides',
   //   select: '-__v -passwordChangedAt',

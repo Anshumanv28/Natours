@@ -3,6 +3,8 @@ const express = require('express');
 const tourController = require('./../controllers/tourController');
 // eslint-disable-next-line import/no-useless-path-segments
 const authController = require('./../controllers/authController');
+// eslint-disable-next-line import/no-useless-path-segments
+const reviewController = require('./../controllers/reviewController');
 
 const router = express.Router();
 
@@ -29,6 +31,17 @@ router
     authController.protect,
     authController.restrictTo('admin', 'lead-guide'),
     tourController.deleteTour,
+  );
+
+// POST /tour/234fad4/reviews  examples of a nested route
+// GET /tour/234fad4/reviews/948fjkdj
+
+router
+  .route('/:tourId/reviews')
+  .post(
+    authController.protect,
+    authController.restrictTo('user'),
+    reviewController.createReview,
   );
 
 module.exports = router;
