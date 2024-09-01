@@ -4,11 +4,23 @@ const tourController = require('./../controllers/tourController');
 // eslint-disable-next-line import/no-useless-path-segments
 const authController = require('./../controllers/authController');
 // eslint-disable-next-line import/no-useless-path-segments
-const reviewController = require('./../controllers/reviewController');
+// const reviewController = require('./../controllers/reviewController');
+const reviewRouter = require('./reviewRoutes');
 
 const router = express.Router();
 
 // router.param('id', tourController.checkID); //added an additional parameterised middleware to validate user id and removed the related code from tourController
+
+//confusing and duplicate code
+// router
+//   .route('/:tourId/reviews')
+//   .post(
+//     authController.protect,
+//     authController.restrictTo('user'),
+//     reviewController.createReview,
+//   );
+
+router.use('/:tourId/reviews', reviewRouter);
 
 router
   .route('/top-5-cheap')
@@ -35,13 +47,5 @@ router
 
 // POST /tour/234fad4/reviews  examples of a nested route
 // GET /tour/234fad4/reviews/948fjkdj
-
-router
-  .route('/:tourId/reviews')
-  .post(
-    authController.protect,
-    authController.restrictTo('user'),
-    reviewController.createReview,
-  );
 
 module.exports = router;
