@@ -1,6 +1,8 @@
 const User = require('../models/userModel'); //(usually we do ./../models/tourModel for getting out of two files then entering the models folder then the tourModel but it is not required here)
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const factory = require('./handlerFactory');
+
 // const fs = require('fs');
 
 // const tours = JSON.parse(
@@ -57,8 +59,8 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteMe = catchAsync(async (req, res, next) => {
-  await User.findByIdAndUpdate(req.user.id, { active: false });
-
+  await User.findByIdAndUpdate(req.user.id, { active: false }); //if the user wants to delete his account we don't actually delete the account but just deactivate it by setting the active field to false
+  //only the admin can delete the account permanently
   res.status(204).json({
     status: 'success',
     data: null,
@@ -86,9 +88,11 @@ exports.updateUser = (req, res) => {
   });
 };
 
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined!',
-  });
-};
+// exports.deleteUser = (req, res) => {
+//   res.status(500).json({
+//     status: 'error',
+//     message: 'This route is not yet defined!',
+//   });
+// };
+
+exports.deleteUser = factory.deleteOne(User);
