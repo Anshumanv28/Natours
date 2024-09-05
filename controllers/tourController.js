@@ -226,19 +226,22 @@ exports.getTour = catchAsync(async (req, res, next) => {
 //   };
 // };
 
-exports.createTour = catchAsync(async (req, res, next) => {
-  const newTour = await Tour.create(req.body); //creating a new tour directly on the model itself way
+//moved to factory function
+// exports.createTour = catchAsync(async (req, res, next) => {
+//   const newTour = await Tour.create(req.body); //creating a new tour directly on the model itself way
 
-  res.status(201).json({
-    status: 'success',
-    data: {
-      tour: newTour,
-    },
-  });
-});
+//   res.status(201).json({
+//     status: 'success',
+//     data: {
+//       tour: newTour,
+//     },
+//   });
+// });
 // try {
 //   // const newTour = new Tour({})     //creating a new tour using a new document way
 //   // newTour.save()                   //using the ducmunets save() to save the new tour
+
+exports.createTour = factory.createOne(Tour);
 
 // const newTour = await Tour.create(req.body); //creating a new tour directly on the model itself way
 
@@ -279,23 +282,24 @@ exports.createTour = catchAsync(async (req, res, next) => {
 // );
 // });
 
-exports.updateTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true, //always return the updated document rather than the original
-    runValidators: true,
-  });
+//moved to factory function
+// exports.updateTour = catchAsync(async (req, res, next) => {
+//   const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+//     new: true, //always return the updated document rather than the original
+//     runValidators: true,
+//   });
 
-  if (!tour) {
-    return next(new AppError('No tour found with this ID', 404));
-  }
+//   if (!tour) {
+//     return next(new AppError('No tour found with this ID', 404));
+//   }
 
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour, //again tour: tour => tour
-    },
-  });
-});
+//   res.status(200).json({
+//     status: 'success',
+//     data: {
+//       tour, //again tour: tour => tour
+//     },
+//   });
+// });
 //   // const id = req.params.id * 1;
 //   // const tour = tours.find((el) => el.id === id);
 //   // // if (!tour) {
@@ -304,6 +308,8 @@ exports.updateTour = catchAsync(async (req, res, next) => {
 //   // //     message: 'Invalid ID',
 //   // //   });
 //   // // }
+
+exports.updateTour = factory.updateOne(Tour);
 
 //   try {
 //     const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
@@ -324,6 +330,7 @@ exports.updateTour = catchAsync(async (req, res, next) => {
 //   }
 // };
 
+//moved to factory function
 // exports.deleteTour = catchAsync(async (req, res, next) => {
 //   const tour = await Tour.findByIdAndDelete(req.params.id);
 
