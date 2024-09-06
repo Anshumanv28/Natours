@@ -1,8 +1,8 @@
 // const fs = require('fs');
 const Tour = require('../models/tourModel'); //(usually we do ./../models/tourModel for getting out of two files then entering the models folder then the tourModel but it is not required here)
-const APIFeatures = require('../utils/apiFeatures');
+// const APIFeatures = require('../utils/apiFeatures');
 const catchAsync = require('../utils/catchAsync');
-const AppError = require('../utils/appError');
+// const AppError = require('../utils/appError');
 const factory = require('./handlerFactory');
 
 // Alias route for frequently use route
@@ -43,22 +43,25 @@ exports.aliasTopTours = async (req, res, next) => {
 //   next();
 // };
 
-exports.getAllTours = catchAsync(async (req, res, next) => {
-  const features = new APIFeatures(Tour.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate(); //chaining possible only because we return this from each function
-  const tours = await features.query;
+// exports.getAllTours = catchAsync(async (req, res, next) => {
+//   const features = new APIFeatures(Tour.find(), req.query)
+//     .filter()
+//     .sort()
+//     .limitFields()
+//     .paginate(); //chaining possible only because we return this from each function
+//   const tours = await features.query;
 
-  res.status(200).json({
-    status: 'success',
-    results: tours.length,
-    data: {
-      tours,
-    },
-  });
-});
+//   res.status(200).json({
+//     status: 'success',
+//     results: tours.length,
+//     data: {
+//       tours,
+//     },
+//   });
+// });
+
+exports.getAllTours = factory.getAll(Tour);
+
 //   try {
 //     // 1A) Filtering
 //     // const queryObj = { ...req.query };
@@ -159,26 +162,30 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 //   // });
 // };
 
-exports.getTour = catchAsync(async (req, res, next) => {
-  // const tour = await Tour.findById(req.params.id);
-  const tour = await Tour.findById(req.params.id).populate('reviews'); //will show populate the reviews in the tours model(referencing) with the reviews data during query execution
-  // const tour = await Tour.findById(req.params.id).populate({
-  //   path: 'guides',
-  //   select: '-__v -passwordChangedAt',
-  // }); //will show populate the guides in the tours model(referencing) with the guides data during query execution
-  // console.log('🍀🍀🍀🍀');
-  // console.log(tour);
-  if (!tour) {
-    return next(new AppError('No tour found with this ID', 404));
-  }
-  //next auto assumes anything passed into it apart from the res ans req as an error and skips all the middlewares and goes directly to the error handling middleware
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour,
-    },
-  });
-});
+// exports.getTour = catchAsync(async (req, res, next) => {
+//   // const tour = await Tour.findById(req.params.id);
+//   const tour = await Tour.findById(req.params.id).populate('reviews'); //will show populate the reviews in the tours model(referencing) with the reviews data during query execution
+//   // const tour = await Tour.findById(req.params.id).populate({
+//   //   path: 'guides',
+//   //   select: '-__v -passwordChangedAt',
+//   // }); //will show populate the guides in the tours model(referencing) with the guides data during query execution
+//   // console.log('🍀🍀🍀🍀');
+//   // console.log(tour);
+//   if (!tour) {
+//     return next(new AppError('No tour found with this ID', 404));
+//   }
+//   //next auto assumes anything passed into it apart from the res ans req as an error and skips all the middlewares and goes directly to the error handling middleware
+//   res.status(200).json({
+//     status: 'success',
+//     data: {
+//       tour,
+//     },
+//   });
+// });
+
+exports.getTour = factory.getOne(Tour, { path: 'reviews' }); //can specify path to populate the reviews in the tours model(referencing) with the reviews data during query execution
+//can also specify select: '-__v -passwordChangedAt' to exclude these fields in the response
+
 //   try {
 //     const tour = await Tour.findById(req.params.id);
 //     // Tour.findOne({ id: req.params.id });
