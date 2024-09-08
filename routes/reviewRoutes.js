@@ -8,6 +8,10 @@ const router = express.Router({ mergeParams: true }); //merge the parameters fro
 //GET /tour/234fad4/reviews
 //POST /reviews
 //A nested POST endpoint
+
+//only authenticated users can create, get, update and delete reviews
+router.use(authController.protect);
+
 router
   .route('/')
   .get(reviewController.getAllReviews)
@@ -21,6 +25,12 @@ router
 router
   .route('/:id')
   .get(reviewController.getReview)
-  .delete(reviewController.deleteReview)
-  .patch(reviewController.updateReview);
+  .delete(
+    authController.restrictTo('user', 'admin'),
+    reviewController.deleteReview,
+  )
+  .patch(
+    authController.restrictTo('user', 'admin'),
+    reviewController.updateReview,
+  );
 module.exports = router;
