@@ -1,7 +1,12 @@
 const fs = require('fs');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+// eslint-disable-next-line import/no-useless-path-segments
 const Tour = require('./../../models/tourModel');
+// eslint-disable-next-line import/no-useless-path-segments
+const User = require('./../../models/userModel');
+// eslint-disable-next-line import/no-useless-path-segments
+const Review = require('./../../models/reviewModel');
 
 dotenv.config({ path: './config.env' }); //using the config.env file to configure the envionment variables for our project insted of doing them one by one via the console
 
@@ -34,11 +39,18 @@ mongoose
 
 //read Json file
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf-8'));
+const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf-8'));
+const reviews = JSON.parse(
+  fs.readFileSync(`${__dirname}/reviews.json`, 'utf-8'),
+);
 
 //import data into DB
 const importData = async () => {
   try {
     await Tour.create(tours);
+    await User.create(users, { validateBeforeSave: false });
+    await Review.create(reviews);
+
     console.log('Data successfully loaded!');
     process.exit(); //aggressive way of killing a process use carefully
   } catch (err) {
@@ -50,6 +62,9 @@ const importData = async () => {
 const deleteData = async () => {
   try {
     await Tour.deleteMany();
+    await User.deleteMany();
+    await Review.deleteMany();
+
     console.log('Data successfully deleted!');
     process.exit(); //aggressive way of killing a process use carefully
   } catch (err) {
