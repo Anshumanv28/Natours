@@ -161,6 +161,7 @@ exports.getAll = (Model) =>
       .sort()
       .limitFields()
       .paginate(); //chaining possible only because we return this from each function
+    // const docs = await features.query.explain(); //explain() will show the statistics of the query execution
     const docs = await features.query;
 
     //SEND RESPONSE

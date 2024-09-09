@@ -151,6 +151,11 @@ tourSchema.virtual('reviews', {
 
 //testing code
 
+//using indexes for faster queries
+// tourSchema.index({ price: 1 }); //1 for ascending order and -1 for descending order
+tourSchema.index({ price: 1, ratingsAverage: -1 }); //compound index
+tourSchema.index({ slug: 1 });
+
 tourSchema.virtual('durationWeeks').get(function () {
   //remember not to use arrow function as it doesn't have its own this keyword
   return this.duration / 7;
