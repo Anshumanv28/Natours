@@ -42,6 +42,8 @@ const tourSchema = new mongoose.Schema(
       default: 4.5,
       min: [1, 'Rating must be above 1.0'], //min and max are validators
       max: [5, 'Rating must be below 5.0'],
+      // set: (val) => Math.round(val) //val() rounds off to the nearest integer so use below trick instead
+      set: (val) => Math.round(val * 10) / 10, //setter function to round off the ratings to 1 decimal place
     },
     ratingsQuantity: {
       type: Number,
