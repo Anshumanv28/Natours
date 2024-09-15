@@ -157,6 +157,8 @@ tourSchema.virtual('reviews', {
 // tourSchema.index({ price: 1 }); //1 for ascending order and -1 for descending order
 tourSchema.index({ price: 1, ratingsAverage: -1 }); //compound index
 tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' }); //for geospatial queries
+//not 1 or -1 for geospatial data as it in not organized using sorting instead in a 2d sphere form
 
 tourSchema.virtual('durationWeeks').get(function () {
   //remember not to use arrow function as it doesn't have its own this keyword

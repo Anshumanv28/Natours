@@ -34,6 +34,13 @@ router.route('/monthly-plan/:year').get(
   tourController.getMonthlyPlan,
 );
 
+//standard way of defining a route that contains a lot of options
+router
+  .route('/tours-within/:distance/center/:latlng/unit/:unit')
+  .get(tourController.getToursWithin);
+//  /tour-distance?distance=233&center=-40,45&unit=mi
+//  /tour-distance/233/center/-40,45/unit/mi  (mi=miles)
+
 router
   .route('/')
   // .get(catchAsync(tourController.getAllTours))  //could have also used catchAsync here instead of the in the controller (takes longer to debug sometimes)

@@ -2,7 +2,7 @@
 const Tour = require('../models/tourModel'); //(usually we do ./../models/tourModel for getting out of two files then entering the models folder then the tourModel but it is not required here)
 // const APIFeatures = require('../utils/apiFeatures');
 const catchAsync = require('../utils/catchAsync');
-// const AppError = require('../utils/appError');
+const AppError = require('../utils/appError');
 const factory = require('./handlerFactory');
 
 // Alias route for frequently use route
@@ -545,3 +545,36 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
 //     });
 //   }
 // };
+
+//  /tours-within/:distance/center/:latlng/unit/:unit
+//  /tour-distance/233/center/25.318900602189764, 82.98080926790328/unit/mi  (mi=miles)
+exports.getToursWithin = catchAsync(async (req, res, next) => {
+  const { distance, latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(','); //destructuring
+
+  const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1; //3963.2 is the radius of the earth in miles and 6378.1 in km
+
+  if (!lat || !lng) {
+    next(
+      new AppError(
+        'Please provide latitude and longitude in the format lat,lng',
+        400,
+      ),
+    );
+  }
+
+  console.log(distance, lat, lng, unit);
+  // console.log(radius);
+
+  const tours = await Tour.find({
+    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } }, //geoWithin is a mongodb geospatial operator that finds documents within a certain geometry(see doc for more info)
+  });
+
+  res.status(200).json({
+    status: 'success',
+    results: tours.length,
+    data: {
+      data: tours,
+    },
+  });
+});
