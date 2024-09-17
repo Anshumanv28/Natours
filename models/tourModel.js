@@ -214,12 +214,12 @@ tourSchema.post(/^find/, function (docs, next) {
 });
 
 //Aggregation Middleware
-tourSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } }); //shift() is used to add elements to the end of the array and unshift() at the start of the array
+// tourSchema.pre('aggregate', function (next) {
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } }); //shift() is used to add elements to the end of the array and unshift() at the start of the array
 
-  console.log(this.pipeline());
-  next();
-});
+//   console.log(this.pipeline());
+//   next();
+// });
 
 const Tour = mongoose.model('Tour', tourSchema);
 

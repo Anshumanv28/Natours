@@ -41,6 +41,8 @@ router
 //  /tour-distance?distance=233&center=-40,45&unit=mi
 //  /tour-distance/233/center/-40,45/unit/mi  (mi=miles)
 
+router.route('/distances/:latlng/unit/:unit').get(tourController.getDistances);
+
 router
   .route('/')
   // .get(catchAsync(tourController.getAllTours))  //could have also used catchAsync here instead of the in the controller (takes longer to debug sometimes)

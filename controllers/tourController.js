@@ -578,3 +578,47 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.getDistances = catchAsync(async (req, res, next) => {
+  const { latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(','); //destructuring
+
+  const multiplier = unit === 'mi' ? 0.000621371 : 0.001; //converts to miles or km
+
+  if (!lat || !lng) {
+    next(
+      new AppError(
+        'Please provide latitude and longitude in the format lat,lng',
+        400,
+      ),
+    );
+  }
+
+  const distances = await Tour.aggregate([
+    {
+      $geoNear: {
+        //geonear is a mongodb geospatial pipeline stage that calculates distances from a point to a near field, Note it needs to be the first stage in the pipeline
+        near: {
+          type: 'Point',
+          coordinates: [lng * 1, lat * 1], //converting to number
+        },
+        distanceField: 'distance',
+        distanceMultiplier: multiplier,
+      },
+    },
+    {
+      $project: {
+        //project is a mongodb pipeline stage that allows us to include or exclude fields from the output, this one will only include the distance and name fields
+        distance: 1,
+        name: 1,
+      },
+    },
+  ]);
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      data: distances,
+    },
+  });
+});
