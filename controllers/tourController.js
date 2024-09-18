@@ -597,7 +597,7 @@ exports.getDistances = catchAsync(async (req, res, next) => {
   const distances = await Tour.aggregate([
     {
       $geoNear: {
-        //geonear is a mongodb geospatial pipeline stage that calculates distances from a point to a near field, Note it needs to be the first stage in the pipeline
+        //geonear is a mongodb geospatial aggregator pipeline stage that calculates distances from a point to a near field, Note it needs to be the first stage in the pipeline
         near: {
           type: 'Point',
           coordinates: [lng * 1, lat * 1], //converting to number

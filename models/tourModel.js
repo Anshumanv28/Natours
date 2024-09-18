@@ -213,7 +213,8 @@ tourSchema.post(/^find/, function (docs, next) {
   next();
 });
 
-//Aggregation Middleware
+//turned on to check and get error logs
+// Aggregation Middleware(Had to be turned off for the geoNear aggregation)
 // tourSchema.pre('aggregate', function (next) {
 //   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } }); //shift() is used to add elements to the end of the array and unshift() at the start of the array
 
