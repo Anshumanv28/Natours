@@ -204,3 +204,5 @@ the routes were moved from the main app.js to module files userRoutes and tourRo
 //   .get(getUser)
 //   .patch(updateUser)
 //   .delete(deleteUser);
+
+//updated APIs in Postman and started working on documentation
