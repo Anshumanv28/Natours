@@ -1,3 +1,4 @@
+const path = require('path'); //core module used to manipulate paths
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
@@ -14,6 +15,17 @@ const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 
 const app = express();
+
+//Experss supports pug, ejs, and more commonly used templating engines
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views')); //default is views folder
+//pug templates are called views in express (MVC Model View Controller architecture)
+
+//serving static files
+// app.use(express.static(`${__dirname}/public`)); //middleware to access satic files(note that the browser by default looks for the requested file in the public folder(that we defined) if not found)
+// use this instead of the above line good practice
+app.use(express.static(path.join(__dirname, 'public'))); //path.join is used to join the current directory with the public folder
+
 //----------------------
 // 1) GLOBAL MIDDLEWARES
 //----------------------
@@ -57,9 +69,6 @@ app.use(
   }),
 );
 
-//serving static files
-app.use(express.static(`${__dirname}/public`)); //middleware to access satic files(note that the browser by default looks for the requested file in the public folder(that we defined) if not found)
-
 // app.use((req, res, next) => {
 //   console.log('Hello from the middleware😁');
 //   next(); //remember very very important to complete the request response cycle
@@ -82,6 +91,13 @@ app.use((req, res, next) => {
 //   res.send('you can post to this endpoint...');
 // });
 
+//----------------------
+// 1) ROUTES
+//----------------------
+
+app.get('/', (req, res) => {
+  res.status(200).render('base');
+});
 //define this after defining all the route handlers(good pracitce)
 app.use('/api/v1/tours', tourRouter); //effectively created a mini app in itself
 //note that this depends on the compiler/interpretter hitting this line of code then going to middleware function then to its respective route handler
