@@ -210,3 +210,5 @@ the routes were moved from the main app.js to module files userRoutes and tourRo
 //published the API documentation
 //https://documenter.getpostman.com/view/32894704/2sAXqtZg7h
 //Remember not to publish the environments if it contains sensitive information like passwords
+
+//Made more changes to API documentation on Postman check the postman for more updates will log here soon
