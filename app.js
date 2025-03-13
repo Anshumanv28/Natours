@@ -11,8 +11,8 @@ const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
-
 const reviewRouter = require('./routes/reviewRoutes');
+const viewRouter = require('./routes/viewRoutes');
 
 const app = express();
 
@@ -95,12 +95,29 @@ app.use((req, res, next) => {
 // 3) ROUTES
 //----------------------
 
-app.get('/', (req, res) => {
-  res.status(200).render('base', {
-    tour: 'The Forest Hiker',
-    user: 'Anshuman',
-  });
-});
+//view routes
+// app.get('/', (req, res) => {
+//   //defining the route
+//   res.status(200).render('base', {
+//     //rendering the pug respective pug template
+//     tour: 'The Forest Hiker',
+//     user: 'Anshuman',
+//   });
+// });
+
+// app.get('/overview', (req, res) => {
+//   res.status(200).render('overview', {
+//     title: 'All Tours',
+//   });
+// });
+
+// app.get('/tour', (req, res) => {
+//   res.status(200).render('tour', {
+//     title: 'The Forest Hiker Tour',
+//   });
+// });
+
+app.use('/', viewRouter);
 //define this after defining all the route handlers(good pracitce)
 app.use('/api/v1/tours', tourRouter); //effectively created a mini app in itself
 //note that this depends on the compiler/interpretter hitting this line of code then going to middleware function then to its respective route handler
