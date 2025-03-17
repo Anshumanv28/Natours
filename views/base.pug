@@ -7,16 +7,18 @@ html
     //- <link rel="stylesheet" href="css/style.css" />
     //- link(rel="shortcut icon" type='image/png' href='img/favicon.png')
     
-    meta(charset="UTF-8")
-    meta(name="viewport" content="width=device-width, initial-scale=1.0")
-    
-    link(href="https://fonts.googleapis.com/css?family=Lato:300,300i,700" rel="stylesheet")
-    
-    link(rel="stylesheet" href="/css/style.css")
-    link(rel="shortcut icon" type="image/png" href="/img/favicon.png")
+    block head
 
-    //- title Natours | Exciting tours for adventurous people
-    title Natours | #{title}
+      meta(charset="UTF-8")
+      meta(name="viewport" content="width=device-width, initial-scale=1.0")
+      
+      link(href="https://fonts.googleapis.com/css?family=Lato:300,300i,700" rel="stylesheet")
+      
+      link(rel="stylesheet" href="/css/style.css")
+      link(rel="shortcut icon" type="image/png" href="/img/favicon.png")
+
+      //- title Natours | Exciting tours for adventurous people
+      title Natours | #{title}
 
   //- body 
     //- h1= tour
@@ -46,3 +48,5 @@ html
 
     //FOOTER
     include _footer
+
+    script(src='/js/mapbox.js') 
