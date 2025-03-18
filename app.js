@@ -31,8 +31,25 @@ app.use(express.static(path.join(__dirname, 'public'))); //path.join is used to 
 //----------------------
 
 //set security HTTP headers
-app.use(helmet());
-
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", 'https://unpkg.com'],
+        styleSrc: [
+          "'self'",
+          'https://unpkg.com',
+          'https://fonts.googleapis.com',
+        ],
+        imgSrc: ["'self'", 'data:'],
+        connectSrc: ["'self'", 'https://demotiles.maplibre.org'],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+        workerSrc: ["'self'", 'blob:'],
+      },
+    },
+  }),
+);
 //development logging
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
