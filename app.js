@@ -36,14 +36,19 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", 'https://unpkg.com'],
+        scriptSrc: ["'self'", 'https://unpkg.com', 'https://api.maptiler.com'],
         styleSrc: [
           "'self'",
           'https://unpkg.com',
           'https://fonts.googleapis.com',
+          'https://api.maptiler.com',
         ],
         imgSrc: ["'self'", 'data:'],
-        connectSrc: ["'self'", 'https://demotiles.maplibre.org'],
+        connectSrc: [
+          "'self'",
+          'https://demotiles.maplibre.org',
+          'https://api.maptiler.com',
+        ],
         fontSrc: ["'self'", 'https://fonts.gstatic.com'],
         workerSrc: ["'self'", 'blob:'],
       },

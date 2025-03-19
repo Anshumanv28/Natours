@@ -2,6 +2,9 @@ extends base
 include _reviewCard
 
 block append head
+  script(src="https://unpkg.com/maplibre-gl@1.15.2/dist/maplibre-gl.js") // Add this line
+  link(rel="stylesheet" href="https://unpkg.com/maplibre-gl@1.15.2/dist/maplibre-gl.css")
+
   //- script(src='/js/mapbox.js')    //DOM not loaded yet
 
 mixin overviewBox(label, text, icon)
