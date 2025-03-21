@@ -20,12 +20,14 @@ const createSendToken = (user, statusCode, res) => {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
     ),
-    secure: true, //cookie will only be sent on encrypted connection (HHTPS protocol)
-    httpOnly: true,  //cookie cannot be accessed or modified in any way by the browser(XSS attacks)
+    // secure: true,
+    secure: process.env.NODE_ENV === 'production', //cookie will only be sent on encrypted connection (HHTPS protocol)
+    httpOnly: true, //cookie cannot be accessed or modified in any way by the browser(XSS attacks)
+    // sameSite: 'None', // SameSite options: 'Strict', 'Lax', or 'None'
   };
 
-  if(process.env.NODE_ENV === 'production') cookieOptions.secure = true; //only in production
-  
+  // if (process.env.NODE_ENV === 'production') cookieOptions.secure = true; //only in production
+
   res.cookie('jwt', token, cookieOptions);
 
   user.password = undefined; //remove the password from the output when creating a new user
@@ -37,17 +39,18 @@ const createSendToken = (user, statusCode, res) => {
       user,
     },
   });
-}
+};
 
 exports.signup = catchAsync(async (req, res, next) => {
-  const newUser = await User.create(req.body,
+  const newUser = await User.create(
+    req.body,
     //{
     // name: req.body.name,
     // email: req.body.email,
     // password: req.body.password,
     // passwordConfirm: req.body.passwordConfirm,
     // role: req.body.role, //this is not secure change soon
-  // }
+    // }
   );
 
   createSendToken(newUser, 201, res);
@@ -188,28 +191,28 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   const hashedToken = crypto
     .createHash('sha256')
     .update(req.params.token)
-    .digest('hex');  //converting to hexadecimal
+    .digest('hex'); //converting to hexadecimal
 
-    const user = await User.findOne({
-      passwordResetToken: hashedToken,
-      passwordResetExpires: { $gt: Date.now() },
-    });  //finding the user with the token and chekcing if the token has expired at the same time
-     
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  }); //finding the user with the token and chekcing if the token has expired at the same time
+
   //2) If token has not expired, and there is a user, set the new password
-  if(!user) {
-    return next(new AppError('Token is invalid or has expired', 400))
+  if (!user) {
+    return next(new AppError('Token is invalid or has expired', 400));
   }
   user.password = req.body.password;
-  user.passwordConfirm = req.body.passwordConfirm; 
+  user.passwordConfirm = req.body.passwordConfirm;
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
-  await user.save();  //we are not turning off the validators here 
+  await user.save(); //we are not turning off the validators here
   //and thats why we are using save not update so the validators run
   // and the save middleware functions are called like the one where passwords are encrypted
 
   //3) Update changedPasswordAt property for the user
   user.passwordChangedAt = Date.now();
-  
+
   //4) Log the user in, send JWT
   createSendToken(user, 200, res);
   // const token = signToken(user._id);
@@ -220,9 +223,10 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   // });
 });
 
-exports.updatePassword = catchAsync(async(req, res, next) => {  //only for authenticated users
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  //only for authenticated users
   //1) get user from collection
-  const user = await User.findById(req.user.id).select('+password');  //explicitly selecting the password field by definging in the schema
+  const user = await User.findById(req.user.id).select('+password'); //explicitly selecting the password field by definging in the schema
 
   //2) check if POSTed current password is correct
   if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
@@ -232,7 +236,7 @@ exports.updatePassword = catchAsync(async(req, res, next) => {  //only for authe
   //3) if so, update password
   user.password = req.body.password;
   user.passwordConfirm = req.body.passwordConfirm;
-  await user.save();  
+  await user.save();
 
   //4) Update changedPasswordAt property for the user
   user.passwordChangedAt = Date.now();

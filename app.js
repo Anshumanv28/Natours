@@ -6,6 +6,8 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const cors = require('cors'); // Add this line
+const cookieParser = require('cookie-parser');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -15,6 +17,14 @@ const reviewRouter = require('./routes/reviewRoutes');
 const viewRouter = require('./routes/viewRoutes');
 
 const app = express();
+
+// Enable CORS with credentials
+app.use(
+  cors({
+    origin: 'http://localhost:3000', // Update this to your frontend domain
+    credentials: true,
+  }),
+);
 
 //Experss supports pug, ejs, and more commonly used templating engines
 app.set('view engine', 'pug');
@@ -36,7 +46,12 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", 'https://unpkg.com', 'https://api.maptiler.com'],
+        scriptSrc: [
+          "'self'",
+          'https://unpkg.com',
+          'https://api.maptiler.com',
+          'https://cdnjs.cloudflare.com',
+        ],
         styleSrc: [
           "'self'",
           'https://unpkg.com',
@@ -48,6 +63,8 @@ app.use(
           "'self'",
           'https://demotiles.maplibre.org',
           'https://api.maptiler.com',
+          'http://127.0.0.1:3000', // Add your API endpoint here
+          'http://localhost:3000', // Add this line
         ],
         fontSrc: ["'self'", 'https://fonts.gstatic.com'],
         workerSrc: ["'self'", 'blob:'],
@@ -70,6 +87,7 @@ app.use('/api', limiter);
 
 //body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' })); //middleware to parse the body of the request and limit the size of the body to 10kb
+app.use(cookieParser());
 
 //Data Sanitization against NoSQL query injection
 app.use(mongoSanitize());
@@ -98,7 +116,8 @@ app.use(
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
-  console.log(req.headers);
+  // console.log(req.headers);
+  console.log(req.cookies);
   next();
 });
 
