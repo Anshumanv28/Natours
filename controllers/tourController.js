@@ -563,7 +563,7 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
     );
   }
 
-  console.log(distance, lat, lng, unit);
+  // console.log(distance, lat, lng, unit);
   // console.log(radius);
 
   const tours = await Tour.find({

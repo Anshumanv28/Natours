@@ -6,7 +6,7 @@ const handleCastErrorDB = (err) => {
 };
 
 const handleDuplicateFieldsDB = (err) => {
-  console.log('I AM WORKING');
+  // console.log('I AM WORKING');
   console.log(err);
   const value = err.keyValue.email; //this is a regular expression to extract the value from the error message
   console.log(value);
@@ -15,7 +15,7 @@ const handleDuplicateFieldsDB = (err) => {
 };
 
 const handleValidationErrorDB = (err) => {
-  console.log('I AM WORKING');
+  // console.log('I AM WORKING');
   const errors = Object.values(err.errors).map((el) => el.properties.message); //Object.values returns an array of the values of the object
   const message = `Invalid input data. ${errors.join('. ')}`;
   return new AppError(message, 400); //400 is bad request
@@ -28,7 +28,7 @@ const handleJWTexipiredError = (err) =>
   new AppError('Your token has expired! Please log in again!', 401);
 
 const sendErrorDev = (err, res) => {
-  console.log('I AM WORKING');
+  // console.log('I AM WORKING');
   res.status(err.statusCode).json({
     status: err.status,
     error: err,

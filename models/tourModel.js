@@ -175,7 +175,7 @@ tourSchema.pre('save', function (next) {
   //runs ONLY before the ./save() and .create() and not before .update()
   //pre middleware ()s are executed before the specified operations are executed
   this.slug = slugify(this.name, { lower: true });
-  console.log(this); //the currently processed document\
+  // console.log(this); //the currently processed document\
   next();
 });
 

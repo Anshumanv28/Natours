@@ -8,11 +8,12 @@ axios.defaults.withCredentials = true;
 
 const login = async (email, password) => {
   // alert(email, password);
-  console.log(email, password);
+  // console.log(email, password);
   try {
     const res = await axios({
       method: 'POST',
-      url: 'http://127.0.0.1:3000/api/v1/users/login',
+      // url: 'http://127.0.0.1:3000/api/v1/users/login',
+      url: '/api/v1/users/login', //since we are hosting the api and the website on the same server
       data: {
         // email: email,
         email,
@@ -21,9 +22,9 @@ const login = async (email, password) => {
       },
       withCredentials: true,
     });
-    console.log(res);
+    // console.log(res);
   } catch (err) {
-    console.log(err.response.data);
+    // console.log(err.response.data);
   }
 };
 

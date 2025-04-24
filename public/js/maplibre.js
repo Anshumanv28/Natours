@@ -1,12 +1,12 @@
 // filepath: c:\work\github\Natours-\public\js\maptiler.js
 /* eslint-disable */
 
-console.log('hello from the client side :D');
+// console.log('hello from the client side :D');
 const mapElement = document.getElementById('map');
 // if (mapElement) {
 const locations = JSON.parse(mapElement.dataset.locations);
 
-console.log(locations);
+// console.log(locations);
 
 var map = new maplibregl.Map({
   container: 'map', // container id
