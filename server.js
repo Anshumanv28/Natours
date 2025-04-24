@@ -23,7 +23,8 @@ const app = require('./app'); // console.log(app.get('env')); //checking the env
 // );
 
 //for the local database
-const DB = process.env.DATABASE_LOCAL.replace(
+// const DB = process.env.DATABASE_LOCAL.replace(
+const DB = process.env.DATABASE.replace(
   //replacing the connection strings <PASSWORD> with the original passowrd in the .env file
   '<PASSWORD>',
   process.env.DATABASE_PASSWORD,
