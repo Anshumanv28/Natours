@@ -7,8 +7,8 @@
 axios.defaults.withCredentials = true;
 
 const login = async (email, password) => {
-  // alert(email, password);
-  // console.log(email, password);
+  alert(email, password);
+  console.log(email, password);
   try {
     const res = await axios({
       method: 'POST',
@@ -22,9 +22,16 @@ const login = async (email, password) => {
       },
       withCredentials: true,
     });
-    // console.log(res);
+
+    if (res.data.status === 'success') {
+      alert('Logged in successfully!');
+      // location.assign('/'); //redirecting to the home page
+      window.setTimeout(() => {
+        location.assign('/'); //redirecting to the home page
+      }, 1500);
+    }
   } catch (err) {
-    // console.log(err.response.data);
+    console.log(err.response.data);
   }
 };
 
