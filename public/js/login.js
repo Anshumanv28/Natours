@@ -3,41 +3,30 @@
 
 //Note: client facing javascript code, and only mordern browsers can run async/await
 //Axios is used to make http requests from the browser to the server
+import axios from 'axios';
+import { showAlert } from './alert.js'; //importing the showAlert function from the alerts.js file
 
 axios.defaults.withCredentials = true;
 
-const login = async (email, password) => {
-  alert(email, password);
-  console.log(email, password);
+export const login = async (email, password) => {
   try {
     const res = await axios({
       method: 'POST',
-      // url: 'http://127.0.0.1:3000/api/v1/users/login',
       url: '/api/v1/users/login', //since we are hosting the api and the website on the same server
       data: {
-        // email: email,
         email,
-        // password: password,
         password,
       },
       withCredentials: true,
     });
 
     if (res.data.status === 'success') {
-      alert('Logged in successfully!');
-      // location.assign('/'); //redirecting to the home page
+      showAlert('success', 'Logged in successfully!');
       window.setTimeout(() => {
         location.assign('/'); //redirecting to the home page
       }, 1500);
     }
   } catch (err) {
-    console.log(err.response.data);
+    showAlert('error', err.response.data.message);
   }
 };
-
-document.querySelector('.form').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  login(email, password);
-});

@@ -8,7 +8,9 @@
     "start:dev": "nodemon server.js",
     "start:prod": "set NODE_ENV=production&& nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "debug": "ndb server.js"
+    "debug": "ndb server.js",
+    "watch:js": "webpack --mode development --watch",
+    "build:js": "webpack"
   },
   "repository": {
     "type": "git",
@@ -21,6 +23,8 @@
   },
   "homepage": "https://github.com/Anshumanv36/Natours#readme",
   "dependencies": {
+    "@babel/polyfill": "^7.12.1",
+    "axios": "^1.9.0",
     "bcryptjs": "^2.4.3",
     "compression": "^1.8.0",
     "cookie-parser": "^1.4.7",
@@ -46,6 +50,9 @@
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {
+    "@babel/core": "^7.27.1",
+    "@babel/preset-env": "^7.27.1",
+    "babel-loader": "^10.0.0",
     "bcryptjs": "^2.4.3",
     "eslint": "^8.53.0",
     "eslint-config-airbnb": "^19.0.4",
@@ -57,7 +64,14 @@
     "eslint-plugin-react": "^7.33.2",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.9.8",
-    "prettier": "^3.1.0"
+    "prettier": "^3.1.0",
+    "webpack": "^5.99.7",
+    "webpack-cli": "^6.0.1"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ]
   },
   "engines": {
     "node": ">10.0.0"
